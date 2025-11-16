@@ -1,0 +1,8 @@
+License:
+The models on this pack are under the CC0 license, you can check more information about the license [here](https://creativecommons.org/publicdomain/zero/1.0/).
+
+Credit is not mandatory but greatly appreciated.
+
+Textures come from CC0Textures.com.
+
+Most flower images come from Pixabay, this pack doesn't violate their licensing terms since it's transformative content, you can check more information about their license terms [here](https://pixabay.com/pt/service/license/).

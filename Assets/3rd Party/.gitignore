@@ -1,0 +1,4 @@
+Non Redistributables/**/*.*
+!**/*.meta
+!Non Redistributables/Twin Turbo/thumbnail.png
+!Non Redistributables/Twin Turbo/Materials/colors.mat

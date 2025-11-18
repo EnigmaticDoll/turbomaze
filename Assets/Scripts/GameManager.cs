@@ -3,62 +3,99 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    //    [SerializeField] private GameObject noneObj;
-    //    [SerializeField] private GameObject downObj;
-    //    [SerializeField] private GameObject rightObj;
-    //    [SerializeField] private GameObject anyObj;
+    [Header("Maze")]
     [SerializeField] private int width;
     [SerializeField] private int height;
     [SerializeField] private float probabilityAdjacentConnectionPerGridPair;
     [SerializeField] private MazeStyle mazeStyle;
+    [Header("Item")]
+    [SerializeField] private int itemCount;
+    [Header("Camera")]
+    [SerializeField] private Vector3 cameraDisplacement;
+    [Header("Rule")]
+    [SerializeField] private float timeLimit; public float readOnlyTimeLimit => timeLimit;
 
-    // Start is called before the first frame update
-    void Start()
+    private Camera mainCam;
+    private Camera minimapCam;
+
+    private bool isStageOngoing;
+    public float stageElapsedTime { get; private set; }
+
+    public static GameManager Instance { get; private set; }
+
+    private void Awake()
     {
-        //Maze.GridConnectionFlag[] data = Maze.GenerateMazeData(width, height, probabilityAdjacentConnectionPerGridPair);
-        //if (null == data) return;
+        if (null != Instance && this != Instance)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
 
-        //Instantiate(anyObj, new Vector3(-5.2f * -1, 0, -5.2f * -1), Quaternion.identity);
-
-        //for (int x = 0; x < width; x++)
-        //{
-        //    Instantiate(rightObj, new Vector3(-5.2f * -1, 0, -5.2f * x), Quaternion.identity);
-        //}
-        //for (int y = 0; y < height; y++)
-        //{
-        //    Instantiate(downObj, new Vector3(-5.2f * y, 0, -5.2f * -1), Quaternion.identity);
-
-        //    for (int x = 0; x < width; x++)
-        //    {
-        //        int idx = y * width + x;
-        //        bool isDownBlocked = Maze.GridConnectionFlag.None == (data[idx] & Maze.GridConnectionFlag.Down);
-        //        bool isRightBlocked = Maze.GridConnectionFlag.None == (data[idx] & Maze.GridConnectionFlag.Right);
-        //        switch (data[idx])
-        //        {
-        //            case Maze.GridConnectionFlag.None:
-        //                Instantiate(noneObj, new Vector3(-5.2f * y, 0, -5.2f * x), Quaternion.identity);
-        //                break;
-        //            case Maze.GridConnectionFlag.Down:
-        //                Instantiate(downObj, new Vector3(-5.2f * y, 0, -5.2f * x), Quaternion.identity);
-        //                break;
-        //            case Maze.GridConnectionFlag.Right:
-        //                Instantiate(rightObj, new Vector3(-5.2f * y, 0, -5.2f * x), Quaternion.identity);
-        //                break;
-        //            case Maze.GridConnectionFlag.AnyMask:
-        //                Instantiate(anyObj, new Vector3(-5.2f * y, 0, -5.2f * x), Quaternion.identity);
-        //                break;
-        //        };
-        //    }
-        //}
-        MazeBuilder.Build(mazeStyle, width, height, probabilityAdjacentConnectionPerGridPair);
+        DontDestroyOnLoad(gameObject);
     }
 
-    // Update is called once per frame
-    void Update()
+    void OnEnable()
     {
-        
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void Update()
+    {
+        if (isStageOngoing) stageElapsedTime += Time.deltaTime;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        switch (scene.name)
+        {
+            case "Stage":
+                OnStageStart();
+                break;
+        }
+    }
+
+    private void OnStageStart()
+    {
+        MazeBuilder.Build(mazeStyle, width, height, probabilityAdjacentConnectionPerGridPair);
+        Camera[] cams = FindObjectsOfType<Camera>();
+        foreach (var cam in cams)
+        {
+            if (cam.name == "Main Camera") mainCam = cam;
+            if (cam.name == "Mini Map Camera") minimapCam = cam;
+        }
+        isStageOngoing = true;
+        stageElapsedTime = 0;
+    }
+
+    public void StartStage()
+    {
+        SceneManager.LoadScene("Stage");
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
+
+    public void SetCamerasPosition(Vector2 horizontalPlayerPosition)
+    {
+        mainCam.transform.position = new Vector3(horizontalPlayerPosition.x, 0, horizontalPlayerPosition.y) + cameraDisplacement;
+        mainCam.transform.rotation = Quaternion.LookRotation(-cameraDisplacement);
+    }
+
+    public void GetCameraVector(out Vector3 cameraForward, out Vector3 cameraRight)
+    {
+        cameraForward = mainCam.transform.forward;
+        cameraRight = mainCam.transform.right;
     }
 }

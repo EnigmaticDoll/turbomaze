@@ -9,7 +9,7 @@ public static class MazeBuilder
     {
         Maze maze = new Maze(width, height, probabilityAdjacentConnectionPerGridPair);
 
-        float cellToCellDistance = 3 * style.readOnlyBlockDotUnit + 1 * style.readOnlyBlockOffset;
+        float cellToCellDistance = 4 * style.readOnlyBlockDotUnit + 2 * style.readOnlyBlockOffset;
         float cellToWallDistance = 0.5f * cellToCellDistance;
 
         for (int y = -1; y < height; y++)
@@ -41,8 +41,8 @@ public static class MazeBuilder
 
                 Vector3 cellPosition = new Vector3(cellToCellDistance * x, 0f, -cellToCellDistance * y);
 
-                //if (!isThisToLowerConnected) GameObject.Instantiate(style.readOnlyWall_Bar1, cellPosition + new Vector3(0f, 0f, -cellToWallDistance), Quaternion.identity).name = cellRowColumnString;
-                //if (!isThisToRightConnected) GameObject.Instantiate(style.readOnlyWall_Bar1, cellPosition + new Vector3(cellToWallDistance, 0f, 0f), Quaternion.Euler(0f, 90f, 0f)).name = cellRowColumnString;
+                if (!isThisToLowerConnected) GameObject.Instantiate(style.readOnlyWall_Bar1, cellPosition + new Vector3(0f, 0f, -cellToWallDistance), Quaternion.identity).name = cellRowColumnString;
+                if (!isThisToRightConnected) GameObject.Instantiate(style.readOnlyWall_Bar1, cellPosition + new Vector3(cellToWallDistance, 0f, 0f), Quaternion.Euler(0f, 90f, 0f)).name = cellRowColumnString;
 
                 uint cornerTpyeBitMask =
                     (isThisToRightConnected         ? 0b1000u : 0b0000u)

@@ -4741,8 +4741,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ddbdc83f080284428555dd61a24afc8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speedJog: 8
-  speedSprint: 20
+  speedJog: 3
+  speedSprint: 12
   jumpInitialVerticalSpeed: 5
   gravity: 9.8
   sprintTimeMax: 2

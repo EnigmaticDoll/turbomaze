@@ -38,14 +38,19 @@ public class PlayerMovementBehaviour : MonoBehaviour
 
         bool isGrounded = 0 == transform.position.y; // ignore controller.isGrounded, and just use y coordinate value.
 
-        Vector2 horizontalDirection = new Vector2(upDown, leftRight).normalized;
+
+        GameManager.Instance.GetCameraVector(out Vector3 cameraForward, out Vector3 cameraRight);
+        Vector2 cameraPlaneForward = new Vector2(cameraForward.x, cameraForward.z).normalized;
+        Vector2 cameraPlaneRight = new Vector2(cameraRight.x, cameraRight.z).normalized;
+        Vector2 horizontalDirection = cameraPlaneForward * upDown + cameraPlaneRight * leftRight;
+
 
         if (sprintTimeLeft == 0f) isWaitingSprintFullRecharge = true;
         if (sprintTimeMax == sprintTimeLeft) isWaitingSprintFullRecharge = false;
-        bool isSprinting = isSprintPressed && !isWaitingSprintFullRecharge && isGrounded && !isJumpPressed && (0 == horizontalDirection.magnitude);
+        bool isSprinting = isSprintPressed && !isWaitingSprintFullRecharge && isGrounded && !isJumpPressed && (0 != horizontalDirection.magnitude);
         sprintTimeLeft = Mathf.Clamp(sprintTimeLeft + (isSprinting ? -Time.deltaTime : sprintTimeRechargeCoefficient * Time.deltaTime), 0f, sprintTimeMax);
         Vector2 horizontalVelocity = horizontalDirection * (isSprinting ? speedSprint : speedJog);
-        // TODO get camera from game manager and rotate axis
+
 
         if (isGrounded)
         {
@@ -63,5 +68,7 @@ public class PlayerMovementBehaviour : MonoBehaviour
         int speedstep = (0 == horizontalDirection.magnitude) ? 0 : isSprinting ? 2 : 1;
         animator.SetInteger("speedstep", speedstep);
         animator.SetBool("isGrounded", isGrounded);
+
+        GameManager.Instance.SetCamerasPosition(new Vector2(transform.position.x, transform.position.z));
     }
 }

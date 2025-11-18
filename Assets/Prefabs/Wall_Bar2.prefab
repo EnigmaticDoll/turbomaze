@@ -9,7 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1068118215842898380}
-  m_Layer: 0
+  - component: {fileID: 7710761354318074697}
+  m_Layer: 7
   m_Name: Wall_Bar2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -32,6 +33,27 @@ Transform:
   - {fileID: 8522259429144716273}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &7710761354318074697
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 72023117570449119}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 2.1, y: 2.1, z: 1.1}
+  m_Center: {x: -0.5, y: 1.05, z: 0}
 --- !u!1001 &8200945731483829274
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -99,6 +121,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: basic_2x2
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: b58b582cfdd7f804098cd72c654aa512,
+        type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

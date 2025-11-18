@@ -8,12 +8,12 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Character
   - Water
   - UI
-  - 
-  - 
-  - 
+  - Item
+  - MapObject
+  - Effect
   - 
   - 
   - 

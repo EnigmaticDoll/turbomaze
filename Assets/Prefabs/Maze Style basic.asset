@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb939ae02df2aed42a5d7f86eecf037a, type: 3}
+  m_Name: Maze Style basic
+  m_EditorClassIdentifier: 
+  wall_Cross: {fileID: 1594517221651044836, guid: 07a758d226eeb584091d28bb610d177d,
+    type: 3}
+  wall_T: {fileID: 8142124160708760353, guid: b8115de462717fe4b993490c7a334fb0, type: 3}
+  wall_L: {fileID: 2305375440367227548, guid: ac7f02c8e42a0da41bb5b0d3f8913d9b, type: 3}
+  wall_Bar1: {fileID: 1877359880847984338, guid: b8487ede47d75164dbe5199f01a5db4c,
+    type: 3}
+  wall_Bar2: {fileID: 72023117570449119, guid: cb28736581de4fd4380fccc4ac4467de, type: 3}
+  wall_Bar3: {fileID: 2486431288462534023, guid: 86cfe2714910bc24abd53b7869c686dd,
+    type: 3}
+  blockDotUnit: 1
+  blockOffset: 0.1

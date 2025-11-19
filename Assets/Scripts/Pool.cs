@@ -61,6 +61,13 @@ public class Pool
         return trackedObjs.Contains(obj);
     }
 
+    public bool TryGetPrefabOfGameObject(GameObject obj, out GameObject prefab)
+    {
+        bool result = IsTrackedByPool(obj);
+        prefab = result ? poolee : null;
+        return result;
+    }
+
     public void MoveToScene(Scene scene)
     {
         RetrievePooledGameObjects();

@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: item2
   m_EditorClassIdentifier: 
   obj: {fileID: 7260963835119920015, guid: 75823be6f2b2e9744acc21d83e8788f3, type: 3}
+  vfx: {fileID: 8771972552311404799, guid: bbf9e36a48d6c5648a13889afab076fd, type: 3}
+  vfxTime: 2
   description: description for item 2

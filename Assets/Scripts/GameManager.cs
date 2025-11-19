@@ -22,7 +22,8 @@ public class GameManager : MonoBehaviour
     [Header("Misc")]
     [SerializeField] private GameObject eventSystem;
 
-    Dictionary<GameObject, Pool> pools;
+    public Dictionary<GameObject, ItemData> itemDataMap {  get; private set; }
+    public  Dictionary<GameObject, Pool> pools {  get; private set; }
 
     private Camera mainCam;
     private Camera minimapCam;
@@ -33,7 +34,7 @@ public class GameManager : MonoBehaviour
     private uint leftItemCount;
 
     private Scene prevScene;
-    private bool isAnySceneEverLoaded = false;
+    private bool isAnySceneEverLoaded;
 
     public static GameManager Instance { get; private set; }
 
@@ -66,10 +67,18 @@ public class GameManager : MonoBehaviour
         {
             pools.Add(i.readOnlyObj, new Pool(i.readOnlyObj, itemSpawnCount));
         }
-    }
+
+        itemDataMap = new Dictionary<GameObject, ItemData>();
+        foreach (ItemData i in itemDataArray)
+        {
+            itemDataMap.Add(i.readOnlyObj, i);
+        };
+        isAnySceneEverLoaded = false;
+}
 
     void OnDisable()
     {
+        itemDataMap.Clear();
         pools.Clear();
 
         SceneManager.sceneLoaded -= OnSceneLoaded;
@@ -161,5 +170,15 @@ public class GameManager : MonoBehaviour
             }
         }
         Destroy(obj);
+    }
+
+    public GameObject FindPrefabOfPooledGameObject(GameObject obj)
+    {
+        foreach (Pool p in pools.Values)
+        {
+            if (!p.TryGetPrefabOfGameObject(obj, out GameObject prefab)) continue;
+            return prefab;
+        }
+        return null;
     }
 }

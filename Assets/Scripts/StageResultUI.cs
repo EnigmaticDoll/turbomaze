@@ -21,7 +21,11 @@ public class StageResultUI : MonoBehaviour
     private void OnStageEnd()
     {
         canvasResult.SetActive(true);
-        finalScoreText.text = $"Final Score: {TimeToString(GameManager.Instance.stageElapsedTime)}";
+        finalScoreText.text =
+            "Final Score: "
+            + (GameManager.Instance.isStageFailed
+            ? "Failed to clear..."
+            : TimeToString(GameManager.Instance.stageElapsedTime));
     }
 
     private string TimeToString(float time)

@@ -35,6 +35,7 @@ public class GameManager : MonoBehaviour
     private bool isStageOngoing;
     private bool isStageEnded;
     private bool isStageEndedTriggered;
+    public bool isStageFailed { get; private set; }
     public float stageElapsedTime { get; private set; }
     public int leftItemCount { get; private set; }
 
@@ -95,6 +96,11 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
         if (isStageOngoing && !isStageEnded) stageElapsedTime += Time.deltaTime;
+        if (timeLimit <= stageElapsedTime)
+        {
+            isStageEnded = true;
+            isStageFailed = true;
+        }
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -133,6 +139,7 @@ public class GameManager : MonoBehaviour
         isStageOngoing = true;
         isStageEnded = false;
         isStageEndedTriggered = false;
+        isStageFailed = false;
         stageElapsedTime = 0;
         leftItemCount = itemSpawnCount;
     }
@@ -201,6 +208,7 @@ public class GameManager : MonoBehaviour
     {
         onStageEnd += action;
     }
+
     public void UnsubscribeStageEndEvent(Action action)
     {
         onStageEnd -= action;

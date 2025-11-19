@@ -13,17 +13,27 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float probabilityAdjacentConnectionPerGridPair;
     [SerializeField] private MazeStyle mazeStyle;
     [Header("Item")]
-    [SerializeField] private int itemCount;
+    [SerializeField] private int itemSpawnCount;
+    [SerializeField] private ItemData[] itemDataArray;
     [Header("Camera")]
     [SerializeField] private Vector3 cameraDisplacement;
     [Header("Rule")]
     [SerializeField] private float timeLimit; public float readOnlyTimeLimit => timeLimit;
+    [Header("Misc")]
+    [SerializeField] private GameObject eventSystem;
+
+    Dictionary<GameObject, Pool> pools;
 
     private Camera mainCam;
     private Camera minimapCam;
 
     private bool isStageOngoing;
     public float stageElapsedTime { get; private set; }
+
+    private uint leftItemCount;
+
+    private Scene prevScene;
+    private bool isAnySceneEverLoaded = false;
 
     public static GameManager Instance { get; private set; }
 
@@ -37,15 +47,31 @@ public class GameManager : MonoBehaviour
         Instance = this;
 
         DontDestroyOnLoad(gameObject);
+        DontDestroyOnLoad(eventSystem);
     }
 
     void OnEnable()
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
+
+        pools = new Dictionary<GameObject, Pool>();
+        pools.Add(mazeStyle.readOnlyWall_Cross, new Pool(mazeStyle.readOnlyWall_Cross, 100));
+        pools.Add(mazeStyle.readOnlyWall_T, new Pool(mazeStyle.readOnlyWall_T, 100));
+        pools.Add(mazeStyle.readOnlyWall_L, new Pool(mazeStyle.readOnlyWall_L, 100));
+        pools.Add(mazeStyle.readOnlyWall_Bar3, new Pool(mazeStyle.readOnlyWall_Bar3, 100));
+        pools.Add(mazeStyle.readOnlyWall_Bar2, new Pool(mazeStyle.readOnlyWall_Bar2, 100));
+        pools.Add(mazeStyle.readOnlyWall_Bar1, new Pool(mazeStyle.readOnlyWall_Bar1, 100));
+
+        foreach (ItemData i in itemDataArray)
+        {
+            pools.Add(i.readOnlyObj, new Pool(i.readOnlyObj, itemSpawnCount));
+        }
     }
 
     void OnDisable()
     {
+        pools.Clear();
+
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
@@ -56,17 +82,32 @@ public class GameManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        SceneManager.SetActiveScene(scene);
+
+        foreach (Pool p in pools.Values)
+        {
+            p.MoveToScene(scene);
+        }
+
         switch (scene.name)
         {
+            case "Menu":
+                break;
             case "Stage":
                 OnStageStart();
                 break;
         }
+
+        if (isAnySceneEverLoaded) SceneManager.UnloadSceneAsync(prevScene);
+        prevScene = scene;
+        isAnySceneEverLoaded = true;
     }
 
     private void OnStageStart()
     {
         MazeBuilder.Build(mazeStyle, width, height, probabilityAdjacentConnectionPerGridPair);
+        ItemSpawner.Spawn(mazeStyle, itemDataArray, width, height, itemSpawnCount);
+
         Camera[] cams = FindObjectsOfType<Camera>();
         foreach (var cam in cams)
         {
@@ -79,7 +120,7 @@ public class GameManager : MonoBehaviour
 
     public void StartStage()
     {
-        SceneManager.LoadScene("Stage");
+        SceneManager.LoadScene("Stage", LoadSceneMode.Additive);
     }
 
     public void QuitGame()
@@ -97,5 +138,28 @@ public class GameManager : MonoBehaviour
     {
         cameraForward = mainCam.transform.forward;
         cameraRight = mainCam.transform.right;
+    }
+
+
+    public GameObject GetOrCreateDisabledGameObject(GameObject prefab)
+    {
+        if (pools.TryGetValue(prefab, out Pool pool))
+        {
+            return pool.GetOrCreateDisabledGameObject();
+        }
+        return GameObject.Instantiate(prefab);
+    }
+
+    public void ReturnOrDestroyGameObject(GameObject obj)
+    {
+        foreach (Pool p in pools.Values)
+        {
+            if (p.IsTrackedByPool(obj))
+            {
+                ReturnOrDestroyGameObject(obj);
+                return;
+            }
+        }
+        Destroy(obj);
     }
 }

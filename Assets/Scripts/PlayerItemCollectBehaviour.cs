@@ -4,10 +4,13 @@ using UnityEngine;
 
 public class PlayerItemCollectBehaviour : MonoBehaviour
 {
+    AudioSource sfx;
+
     private int itemLayer;
 
     private void Start()
     {
+        sfx = GetComponent<AudioSource>();
         itemLayer = LayerMask.NameToLayer("Item");
     }
 
@@ -16,6 +19,7 @@ public class PlayerItemCollectBehaviour : MonoBehaviour
         if (itemLayer == other.gameObject.layer)
         {
             GameManager.Instance.OnItemCollected();
+            float gatherRate = 1f - GameManager.Instance.leftItemCount / (float)GameManager.Instance.readOnlyItemSpawnCount;
 
             GameObject prefab = GameManager.Instance.FindPrefabOfPooledGameObject(other.transform.parent.gameObject); // item collider is not at prefab root!
             if (null != prefab && GameManager.Instance.itemDataMap.TryGetValue(prefab, out ItemData itemData) && null != itemData.readOnlyVfx)
@@ -27,11 +31,13 @@ public class PlayerItemCollectBehaviour : MonoBehaviour
                     if (null != particleSystem)
                     {
                         var main = particleSystem.main;
-                        main.startColor = Color.Lerp(Color.cyan, Color.red, GameManager.Instance.leftItemCount / (float)GameManager.Instance.readOnlyItemSpawnCount);
+                        main.startColor = Color.Lerp(Color.red, Color.cyan, gatherRate);
                     }
                     Destroy(vfx, itemData.readOnlyVfxTime);
                 }
             }
+            sfx.pitch = 1f + 0.5f * gatherRate;
+            sfx.Play();
             GameManager.Instance.ReturnOrDestroyGameObject(other.transform.parent.gameObject);
         }
     }

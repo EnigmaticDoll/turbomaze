@@ -78,6 +78,7 @@ public class Pool
     {
         foreach (GameObject obj in trackedObjs)
         {
+            if (null != obj.transform.parent && obj.transform.parent.gameObject == pooler) continue;
             ReturnOrDestroyGameObject(obj);
         }
     }

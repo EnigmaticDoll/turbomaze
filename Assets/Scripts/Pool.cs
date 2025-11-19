@@ -7,18 +7,23 @@ public class Pool
 {
     private GameObject pooler;
     private GameObject poolee;
-    private uint initialSize;
 
-    private HashSet<GameObject> tracedObjs = new HashSet<GameObject>();
+    private HashSet<GameObject> trackedObjs = new HashSet<GameObject>();
     private Stack<GameObject> inPool = new Stack<GameObject>();
 
-    public Pool(GameObject obj, uint initialSize)
+    public Pool(GameObject poolee, int initialSize)
     {
-        pooler = new GameObject("Pooler of: " + obj.name);
+        pooler = new GameObject("Pooler of: " + poolee.name);
         pooler.SetActive(false);
-        GameObject.DontDestroyOnLoad(pooler);
-        poolee = obj;
-        this.initialSize = initialSize;
+        this.poolee = poolee;
+
+        for (int i = 0; i < initialSize; i++)
+        {
+            GameObject obj = GameObject.Instantiate(poolee, pooler.transform);
+            trackedObjs.Add(obj);
+            obj.SetActive(false);
+            inPool.Push(obj);
+        }
     }
 
     ~Pool()
@@ -31,17 +36,17 @@ public class Pool
         if (!inPool.TryPop(out GameObject obj))
         {
             obj = GameObject.Instantiate(poolee, pooler.transform);
-            tracedObjs.Add(obj);
+            trackedObjs.Add(obj);
         }
         obj.SetActive(false);
-        SceneManager.MoveGameObjectToScene(obj, SceneManager.GetActiveScene());
+        obj.transform.SetParent(null);
         return obj;
     }
 
     public void ReturnOrDestroyGameObject(GameObject obj)
     {
         if (null == obj) return;
-        if (!tracedObjs.Contains(obj))
+        if (!trackedObjs.Contains(obj))
         {
             GameObject.Destroy(obj);
             return;
@@ -49,5 +54,24 @@ public class Pool
         obj.SetActive(false);
         obj.transform.SetParent(pooler.transform);
         inPool.Push(obj);
+    }
+
+    public bool IsTrackedByPool(GameObject obj)
+    {
+        return trackedObjs.Contains(obj);
+    }
+
+    public void MoveToScene(Scene scene)
+    {
+        RetrievePooledGameObjects();
+        SceneManager.MoveGameObjectToScene(pooler, scene);
+    }
+
+    private void RetrievePooledGameObjects()
+    {
+        foreach (GameObject obj in trackedObjs)
+        {
+            ReturnOrDestroyGameObject(obj);
+        }
     }
 }

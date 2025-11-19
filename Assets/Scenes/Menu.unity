@@ -1114,9 +1114,13 @@ MonoBehaviour:
   height: 9
   probabilityAdjacentConnectionPerGridPair: 0.5
   mazeStyle: {fileID: 11400000, guid: 353951333c81c304daf1fde813e3e05b, type: 2}
-  itemCount: 0
+  itemSpawnCount: 20
+  itemDataArray:
+  - {fileID: 11400000, guid: 51a49c1c15caa5d4eb2b33362241501c, type: 2}
+  - {fileID: 11400000, guid: b9374a494ec32aa44a5f8fdee0317fa5, type: 2}
   cameraDisplacement: {x: 0, y: 15, z: -15}
   timeLimit: 150
+  eventSystem: {fileID: 209529408}
 --- !u!1 &9166806620665029868
 GameObject:
   m_ObjectHideFlags: 0

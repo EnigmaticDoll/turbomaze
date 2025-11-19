@@ -127,7 +127,7 @@ public class GameManager : MonoBehaviour
         {
             if (scene != cam.gameObject.scene) continue;
             if (cam.name == "Main Camera") mainCam = cam;
-            if (cam.name == "Mini Map Camera") minimapCam = cam;
+            if (cam.name == "Minimap Camera") minimapCam = cam;
         }
 
         isStageOngoing = true;
@@ -141,6 +141,7 @@ public class GameManager : MonoBehaviour
     {
         mainCam.transform.position = new Vector3(horizontalPlayerPosition.x, 0, horizontalPlayerPosition.y) + cameraDisplacement;
         mainCam.transform.rotation = Quaternion.LookRotation(-cameraDisplacement);
+        minimapCam.transform.position = new Vector3(horizontalPlayerPosition.x, 10, horizontalPlayerPosition.y);
     }
 
     public void GetMainCameraVector(out Vector3 cameraForward, out Vector3 cameraRight)

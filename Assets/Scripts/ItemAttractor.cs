@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class ItemAttractor : MonoBehaviour
 {
-    [SerializeField] [Tooltip("speed = max(coefficient * distance ^ -factor, min_speed)")] float attractionCoefficient;
-    [SerializeField] [Tooltip("speed = max(coefficient * distance ^ -factor, min_speed)")] float attractionFactor;
-    [SerializeField] [Tooltip("speed = max(coefficient * distance ^ -factor, min_speed)")] float minimumSpeed;
+    [SerializeField] [Tooltip("speed = clamp(coefficient * distance ^ -factor, min_speed, distance / delta_time)")] float attractionCoefficient;
+    [SerializeField] [Tooltip("speed = clamp(coefficient * distance ^ -factor, min_speed, distance / delta_time)")] float attractionFactor;
+    [SerializeField] [Tooltip("speed = clamp(coefficient * distance ^ -factor, min_speed, distance / delta_time)")] float minimumSpeed;
     int itemLayer;
     int mapObjectLayerMask;
 
@@ -27,7 +27,7 @@ public class ItemAttractor : MonoBehaviour
 
             if (!Physics.Raycast(rayOrigin, displacement.normalized, displacement.magnitude, mapObjectLayerMask))
             {
-                float attractionSpeed = Mathf.Max(minimumSpeed, attractionCoefficient * Mathf.Pow(displacement.magnitude, -attractionFactor));
+                float attractionSpeed = Mathf.Clamp(attractionCoefficient * Mathf.Pow(displacement.magnitude, -attractionFactor), minimumSpeed, displacement.magnitude / Time.fixedDeltaTime);
                 other.transform.parent.Translate(-displacement.normalized * attractionSpeed * Time.fixedDeltaTime);
             }
         }

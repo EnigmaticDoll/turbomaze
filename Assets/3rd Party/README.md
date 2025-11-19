@@ -64,6 +64,13 @@ Please note that this work is a derivative work. Read each license carefully.
     - Keyframe Reduction: none
 1. Import into Unity.
 
+### [Cartoon FX Remaster Free](https://assetstore.unity.com/packages/vfx/particles/cartoon-fx-remaster-free-109565) by [Jean Moreno](https://www.jeanmoreno.com/)
+
+![Cartoon FX Remaster Free asset thumbnail image](https://assetstorev1-prd-cdn.unity3d.com/key-image/3fd4fa0e-5f5c-4dd0-ac76-147efb2bd140.webp)
+
+1. Import the asset from Unity Asset Store.
+1. Move `JMO Assets` directory under `./Non Redistributables` directory. (You should turn off Visual Studio before moving the folder.)
+
 ***
 
 ## Acknowledgements

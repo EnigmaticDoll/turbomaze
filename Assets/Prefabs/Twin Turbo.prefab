@@ -4721,6 +4721,7 @@ GameObject:
   - component: {fileID: 2547998908400255346}
   - component: {fileID: 32484853410026661}
   - component: {fileID: 6536487139519822110}
+  - component: {fileID: 5177595029538864653}
   m_Layer: 0
   m_Name: Twin Turbo
   m_TagString: Untagged
@@ -4783,12 +4784,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ddbdc83f080284428555dd61a24afc8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speedJog: 3
+  speedJog: 5
   speedSprint: 12
   jumpInitialVerticalSpeed: 5
   gravity: 9.8
   sprintTimeMax: 2
-  sprintTimeRechargeCoefficient: 1
+  sprintTimeRechargeCoefficient: 2
+--- !u!114 &5177595029538864653
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7401980774211390309}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4731f31e4964aaf4785ef83801d287ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7438329180654151327
 GameObject:
   m_ObjectHideFlags: 0

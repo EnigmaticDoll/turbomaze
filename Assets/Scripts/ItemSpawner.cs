@@ -23,7 +23,7 @@ public static class ItemSpawner
             slots[i] = slots[j];
             slots[j] = swap;
         }
-        
+
         for (int i = 0; i < spawnCount; i++)
         {
             int x = slots[i] % width;

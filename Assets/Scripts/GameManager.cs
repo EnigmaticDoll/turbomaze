@@ -12,29 +12,37 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int height;
     [SerializeField] private float probabilityAdjacentConnectionPerGridPair;
     [SerializeField] private MazeStyle mazeStyle;
+
     [Header("Item")]
-    [SerializeField] private int itemSpawnCount;
+    [SerializeField] private int itemSpawnCount; public int readOnlyItemSpawnCount => itemSpawnCount;
     [SerializeField] private ItemData[] itemDataArray;
+
     [Header("Camera")]
     [SerializeField] private Vector3 cameraDisplacement;
+
     [Header("Rule")]
     [SerializeField] private float timeLimit; public float readOnlyTimeLimit => timeLimit;
+
     [Header("Misc")]
     [SerializeField] private GameObject eventSystem;
 
     public Dictionary<GameObject, ItemData> itemDataMap {  get; private set; }
-    public  Dictionary<GameObject, Pool> pools {  get; private set; }
+    public Dictionary<GameObject, Pool> pools {  get; private set; }
 
     private Camera mainCam;
     private Camera minimapCam;
 
     private bool isStageOngoing;
+    private bool isStageEnded;
+    private bool isStageEndedTriggered;
     public float stageElapsedTime { get; private set; }
-
-    private uint leftItemCount;
+    public int leftItemCount { get; private set; }
 
     private Scene prevScene;
     private bool isAnySceneEverLoaded;
+
+    private event Action onStageEnd;
+
 
     public static GameManager Instance { get; private set; }
 
@@ -56,12 +64,12 @@ public class GameManager : MonoBehaviour
         SceneManager.sceneLoaded += OnSceneLoaded;
 
         pools = new Dictionary<GameObject, Pool>();
-        pools.Add(mazeStyle.readOnlyWall_Cross, new Pool(mazeStyle.readOnlyWall_Cross, 100));
-        pools.Add(mazeStyle.readOnlyWall_T, new Pool(mazeStyle.readOnlyWall_T, 100));
-        pools.Add(mazeStyle.readOnlyWall_L, new Pool(mazeStyle.readOnlyWall_L, 100));
-        pools.Add(mazeStyle.readOnlyWall_Bar3, new Pool(mazeStyle.readOnlyWall_Bar3, 100));
-        pools.Add(mazeStyle.readOnlyWall_Bar2, new Pool(mazeStyle.readOnlyWall_Bar2, 100));
-        pools.Add(mazeStyle.readOnlyWall_Bar1, new Pool(mazeStyle.readOnlyWall_Bar1, 100));
+        pools.Add(mazeStyle.readOnlyWall_Cross, new Pool(mazeStyle.readOnlyWall_Cross,  100));
+        pools.Add(mazeStyle.readOnlyWall_T,     new Pool(mazeStyle.readOnlyWall_T,      100));
+        pools.Add(mazeStyle.readOnlyWall_L,     new Pool(mazeStyle.readOnlyWall_L,      100));
+        pools.Add(mazeStyle.readOnlyWall_Bar3,  new Pool(mazeStyle.readOnlyWall_Bar3,   100));
+        pools.Add(mazeStyle.readOnlyWall_Bar2,  new Pool(mazeStyle.readOnlyWall_Bar2,   100));
+        pools.Add(mazeStyle.readOnlyWall_Bar1,  new Pool(mazeStyle.readOnlyWall_Bar1,   100));
 
         foreach (ItemData i in itemDataArray)
         {
@@ -72,9 +80,9 @@ public class GameManager : MonoBehaviour
         foreach (ItemData i in itemDataArray)
         {
             itemDataMap.Add(i.readOnlyObj, i);
-        };
+        }
         isAnySceneEverLoaded = false;
-}
+    }
 
     void OnDisable()
     {
@@ -86,24 +94,21 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (isStageOngoing) stageElapsedTime += Time.deltaTime;
+        if (isStageOngoing && !isStageEnded) stageElapsedTime += Time.deltaTime;
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         SceneManager.SetActiveScene(scene);
 
-        foreach (Pool p in pools.Values)
-        {
-            p.MoveToScene(scene);
-        }
+        foreach (Pool p in pools.Values) p.MoveToScene(scene);
 
         switch (scene.name)
         {
             case "Menu":
                 break;
             case "Stage":
-                OnStageStart();
+                OnStageStart(scene);
                 break;
         }
 
@@ -112,7 +117,7 @@ public class GameManager : MonoBehaviour
         isAnySceneEverLoaded = true;
     }
 
-    private void OnStageStart()
+    private void OnStageStart(Scene scene)
     {
         MazeBuilder.Build(mazeStyle, width, height, probabilityAdjacentConnectionPerGridPair);
         ItemSpawner.Spawn(mazeStyle, itemDataArray, width, height, itemSpawnCount);
@@ -120,21 +125,16 @@ public class GameManager : MonoBehaviour
         Camera[] cams = FindObjectsOfType<Camera>();
         foreach (var cam in cams)
         {
+            if (scene != cam.gameObject.scene) continue;
             if (cam.name == "Main Camera") mainCam = cam;
             if (cam.name == "Mini Map Camera") minimapCam = cam;
         }
+
         isStageOngoing = true;
+        isStageEnded = false;
+        isStageEndedTriggered = false;
         stageElapsedTime = 0;
-    }
-
-    public void StartStage()
-    {
-        SceneManager.LoadScene("Stage", LoadSceneMode.Additive);
-    }
-
-    public void QuitGame()
-    {
-        Application.Quit();
+        leftItemCount = itemSpawnCount;
     }
 
     public void SetCamerasPosition(Vector2 horizontalPlayerPosition)
@@ -143,12 +143,11 @@ public class GameManager : MonoBehaviour
         mainCam.transform.rotation = Quaternion.LookRotation(-cameraDisplacement);
     }
 
-    public void GetCameraVector(out Vector3 cameraForward, out Vector3 cameraRight)
+    public void GetMainCameraVector(out Vector3 cameraForward, out Vector3 cameraRight)
     {
         cameraForward = mainCam.transform.forward;
         cameraRight = mainCam.transform.right;
     }
-
 
     public GameObject GetOrCreateDisabledGameObject(GameObject prefab)
     {
@@ -165,7 +164,7 @@ public class GameManager : MonoBehaviour
         {
             if (p.IsTrackedByPool(obj))
             {
-                ReturnOrDestroyGameObject(obj);
+                p.ReturnOrDestroyGameObject(obj);
                 return;
             }
         }
@@ -180,5 +179,29 @@ public class GameManager : MonoBehaviour
             return prefab;
         }
         return null;
+    }
+
+    public void OnItemCollected()
+    {
+        leftItemCount--;
+        if (0 == leftItemCount) isStageEnded = true;
+    }
+
+    private void LateUpdate()
+    {
+        if (isStageEnded && !isStageEndedTriggered)
+        {
+            isStageEndedTriggered = true;
+            onStageEnd.Invoke();
+        }
+    }
+
+    public void SubscribeStageEndEvent(Action action)
+    {
+        onStageEnd += action;
+    }
+    public void UnsubscribeStageEndEvent(Action action)
+    {
+        onStageEnd -= action;
     }
 }

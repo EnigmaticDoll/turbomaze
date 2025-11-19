@@ -6,13 +6,13 @@ public class ItemAttractor : MonoBehaviour
 {
     [SerializeField] float attractSpeed;
     int itemLayer;
-    int mapObjectLayer;
+    int mapObjectLayerMask;
 
     // Start is called before the first frame update
     void Start()
     {
         itemLayer = LayerMask.NameToLayer("Item");
-        mapObjectLayer = LayerMask.NameToLayer("MapObject");
+        mapObjectLayerMask = LayerMask.GetMask("MapObject");
     }
 
     private void OnTriggerStay(Collider other)
@@ -23,7 +23,7 @@ public class ItemAttractor : MonoBehaviour
             Vector3 rayTarget = new Vector3(other.transform.parent.position.x, 0.5f, other.transform.parent.position.z);
             Vector3 rayDirectionNotNormalized = rayTarget - rayOrigin;
 
-            if (!Physics.Raycast(rayOrigin, rayDirectionNotNormalized.normalized, rayDirectionNotNormalized.magnitude, /*mapObjectLayer*/LayerMask.GetMask("MapObject")))
+            if (!Physics.Raycast(rayOrigin, rayDirectionNotNormalized.normalized, rayDirectionNotNormalized.magnitude, mapObjectLayerMask))
             {
                 other.transform.parent.Translate(-rayDirectionNotNormalized.normalized * attractSpeed * Time.fixedDeltaTime);
             }

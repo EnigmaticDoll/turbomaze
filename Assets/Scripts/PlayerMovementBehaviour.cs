@@ -18,8 +18,6 @@ public class PlayerMovementBehaviour : MonoBehaviour
     CharacterController controller;
     Animator animator;
 
-    int itemLayer;
-
     // Start is called before the first frame update
     void Start()
     {
@@ -28,7 +26,6 @@ public class PlayerMovementBehaviour : MonoBehaviour
         verticalSpeed = 0;
         sprintTimeLeft = sprintTimeMax;
         isWaitingSprintFullRecharge = false;
-        itemLayer = LayerMask.NameToLayer("Item");
     }
 
     // Update is called once per frame
@@ -42,7 +39,7 @@ public class PlayerMovementBehaviour : MonoBehaviour
         bool isGrounded = 0 == transform.position.y; // ignore controller.isGrounded, and just use y coordinate value.
 
 
-        GameManager.Instance.GetCameraVector(out Vector3 cameraForward, out Vector3 cameraRight);
+        GameManager.Instance.GetMainCameraVector(out Vector3 cameraForward, out Vector3 cameraRight);
         Vector2 cameraPlaneForward = new Vector2(cameraForward.x, cameraForward.z).normalized;
         Vector2 cameraPlaneRight = new Vector2(cameraRight.x, cameraRight.z).normalized;
         Vector2 horizontalDirection = cameraPlaneForward * upDown + cameraPlaneRight * leftRight;
@@ -73,28 +70,5 @@ public class PlayerMovementBehaviour : MonoBehaviour
         animator.SetBool("isGrounded", isGrounded);
 
         GameManager.Instance.SetCamerasPosition(new Vector2(transform.position.x, transform.position.z));
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (itemLayer == other.gameObject.layer)
-        {
-            GameObject prefab = GameManager.Instance.FindPrefabOfPooledGameObject(other.transform.parent.gameObject); // item collider is not at root!
-            if (null != prefab && GameManager.Instance.itemDataMap.TryGetValue(prefab, out ItemData itemData) && null != itemData.readOnlyVfx)
-            {
-                GameObject vfx = Instantiate(itemData.readOnlyVfx, transform);
-                if (null != vfx)
-                {
-                    ParticleSystem particleSystem = vfx.GetComponent<ParticleSystem>();
-                    if (null != particleSystem)
-                    {
-                        var main = particleSystem.main;
-                        main.startColor = Color.red;
-                    }
-                    Destroy(vfx, itemData.readOnlyVfxTime);
-                }
-            }
-            GameManager.Instance.ReturnOrDestroyGameObject(other.gameObject);
-        }
     }
 }

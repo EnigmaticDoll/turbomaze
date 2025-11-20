@@ -5,13 +5,19 @@ using UnityEngine;
 
 public class SprintGaugeUI : MonoBehaviour
 {
-    [SerializeField] TextMeshProUGUI sprintGaugeText;
-    [SerializeField] GameObject sprintGaugeInner;
+    [SerializeField] private GameObject sprintGaugeInner;
+    [SerializeField] private TextMeshProUGUI sprintGaugeText;
 
-    // Update is called once per frame
-    void Update()
+    private RectTransform sprintGaugeInnerRectTransform;
+
+    private void OnEnable()
     {
-        // todo world space canvas
-        //sprintGaugeText.text = GameManager.Instance.spr
+        sprintGaugeInnerRectTransform = sprintGaugeInner.GetComponent<RectTransform>();
+    }
+
+    public void SetSprintGauge(float timeLeft, float timeMax, bool isWaitingFullRecharge)
+    {
+        sprintGaugeInnerRectTransform.offsetMax = new Vector2(timeLeft / timeMax * 200 - 202, 2);
+        sprintGaugeText.text = string.Format("{0:F2} s\n{1}", timeLeft, isWaitingFullRecharge ? "recharging" : "");
     }
 }

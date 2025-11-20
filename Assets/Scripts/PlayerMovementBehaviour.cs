@@ -15,12 +15,16 @@ public class PlayerMovementBehaviour : MonoBehaviour
     private float sprintTimeLeft;
     private bool isWaitingSprintFullRecharge;
 
+    SprintGaugeUI sprintUI;
     CharacterController controller;
     Animator animator;
 
-    // Start is called before the first frame update
     void Start()
     {
+        GameObject uiHandler = GameObject.Find("UI Handler");
+        if (null == uiHandler) Debug.LogWarning("uiHandler not found.");
+        if (null != uiHandler) sprintUI = uiHandler.GetComponent<SprintGaugeUI>();
+        if (null == sprintUI) Debug.LogWarning("sprintUI not found.");
         controller = GetComponent<CharacterController>();
         animator = GetComponentInChildren<Animator>();
         verticalSpeed = 0;
@@ -69,6 +73,7 @@ public class PlayerMovementBehaviour : MonoBehaviour
         animator.SetInteger("speedstep", speedstep);
         animator.SetBool("isGrounded", isGrounded);
 
+        if (null != sprintUI) sprintUI.SetSprintGauge(sprintTimeLeft, sprintTimeMax, isWaitingSprintFullRecharge);
         GameManager.Instance.SetCamerasPosition(new Vector2(transform.position.x, transform.position.z));
     }
 }

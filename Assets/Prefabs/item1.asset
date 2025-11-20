@@ -15,4 +15,6 @@ MonoBehaviour:
   obj: {fileID: 4929886308448249803, guid: dad9f4ca1fc690048854f9a411c432b7, type: 3}
   vfx: {fileID: 9027514048236820045, guid: effb650189dc5714e9e9801b1cfb3991, type: 3}
   vfxTime: 2
-  description: description for item 1
+  description: 'description for item 1.
+
+    Red item! Wow! Awsome!'

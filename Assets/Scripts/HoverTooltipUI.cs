@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class HoverTooltipUI : MonoBehaviour
 {
@@ -47,15 +48,17 @@ public class HoverTooltipUI : MonoBehaviour
 
         RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRectTransform, Input.mousePosition, canvas.worldCamera, out Vector2 localCoord);
 
-        hoverTooltipRectTransform.localPosition = localCoord;
-
         hoverTooltipRectTransform.pivot =
             new Vector2(
                 (canvasRectTransform.rect.width / 2 < localCoord.x + hoverTooltipRectTransform.rect.width) ? 1f : 0f,
                 (-canvasRectTransform.rect.height / 2 > localCoord.y - hoverTooltipRectTransform.rect.height) ? 0f : 1f);
 
+        hoverTooltipRectTransform.localPosition = localCoord;
+
+
         title.text = prefab.name;
         description.text = itemData.readOnlyDescription;
+
         return true;
     }
 }

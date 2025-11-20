@@ -19,7 +19,7 @@ public class PlayerItemCollectBehaviour : MonoBehaviour
         if (itemLayer == other.gameObject.layer)
         {
             GameManager.Instance.OnItemCollected();
-            float gatherRate = 1f - GameManager.Instance.leftItemCount / (float)GameManager.Instance.readOnlyItemSpawnCount;
+            float gatherRate = 1f - GameManager.Instance.leftItemCount / (float)GameManager.Instance.itemSpawnCount;
 
             GameObject prefab = GameManager.Instance.FindPrefabOfPooledGameObject(other.transform.parent.gameObject); // item collider is not at prefab root!
             if (null != prefab && GameManager.Instance.itemDataMap.TryGetValue(prefab, out ItemData itemData) && null != itemData.readOnlyVfx)

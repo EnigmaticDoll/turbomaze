@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -14,7 +13,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private MazeStyle mazeStyle;
 
     [Header("Item")]
-    [SerializeField] private int itemSpawnCount; public int readOnlyItemSpawnCount => itemSpawnCount;
+    [SerializeField] private int itemSpawnCountMin;
+    [SerializeField] private int itemSpawnCountMax;
     [SerializeField] private ItemData[] itemDataArray;
 
     [Header("Camera")]
@@ -37,6 +37,7 @@ public class GameManager : MonoBehaviour
     private bool isStageEndedTriggered;
     public bool isStageFailed { get; private set; }
     public float stageElapsedTime { get; private set; }
+    public int itemSpawnCount { get; private set; }
     public int leftItemCount { get; private set; }
 
     private Scene prevScene;
@@ -74,7 +75,7 @@ public class GameManager : MonoBehaviour
 
         foreach (ItemData i in itemDataArray)
         {
-            pools.Add(i.readOnlyObj, new Pool(i.readOnlyObj, itemSpawnCount));
+            pools.Add(i.readOnlyObj, new Pool(i.readOnlyObj, itemSpawnCountMax));
         }
 
         itemDataMap = new Dictionary<GameObject, ItemData>();
@@ -125,6 +126,14 @@ public class GameManager : MonoBehaviour
 
     private void OnStageStart(Scene scene)
     {
+        isStageOngoing = true;
+        isStageEnded = false;
+        isStageEndedTriggered = false;
+        isStageFailed = false;
+        stageElapsedTime = 0;
+        itemSpawnCount = UnityEngine.Random.Range(itemSpawnCountMin, itemSpawnCountMax);
+        leftItemCount = itemSpawnCount;
+
         MazeBuilder.Build(mazeStyle, width, height, probabilityAdjacentConnectionPerGridPair);
         ItemSpawner.Spawn(mazeStyle, itemDataArray, width, height, itemSpawnCount);
 
@@ -135,13 +144,6 @@ public class GameManager : MonoBehaviour
             if (cam.name == "Main Camera") mainCam = cam;
             if (cam.name == "Minimap Camera") minimapCam = cam;
         }
-
-        isStageOngoing = true;
-        isStageEnded = false;
-        isStageEndedTriggered = false;
-        isStageFailed = false;
-        stageElapsedTime = 0;
-        leftItemCount = itemSpawnCount;
     }
 
     public void SetCamerasPosition(Vector2 horizontalPlayerPosition)

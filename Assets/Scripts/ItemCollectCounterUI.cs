@@ -14,7 +14,7 @@ public class ItemCollectCounterUI : MonoBehaviour
         if (prevLeftItemCount != GameManager.Instance.leftItemCount)
         {
             prevLeftItemCount = GameManager.Instance.leftItemCount;
-            itemLeftCounter.text = $"{GameManager.Instance.leftItemCount} out of {GameManager.Instance.readOnlyItemSpawnCount} left.";
+            itemLeftCounter.text = $"{GameManager.Instance.leftItemCount} out of {GameManager.Instance.itemSpawnCount} left.";
         }
     }
 }

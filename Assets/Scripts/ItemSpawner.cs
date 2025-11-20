@@ -24,21 +24,20 @@ public static class ItemSpawner
             slots[j] = swap;
         }
 
-        for (int i = 0; i < spawnCount; i++)
+        for (int i = 0, currentlySpawnedCount = 0; currentlySpawnedCount < spawnCount; i++)
         {
             int x = slots[i] % width;
             int y = slots[i] / width;
-            if (0 == x && 0 == y)
-            {
-                i--;
-                continue;
-            }
+            if (0 == x && 0 == y) continue;
+
             Vector3 pos = new Vector3(x, 0, -y) * cellToCellDistance;
 
             GameObject prefab = itemDataArray[UnityEngine.Random.Range(0, itemDataArray.Length)].readOnlyObj;
             GameObject item = GameManager.Instance.GetOrCreateDisabledGameObject(prefab);
             item.transform.position = pos;
             item.SetActive(true);
+
+            currentlySpawnedCount++;
         }
     }
 }
